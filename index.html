@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        body {
+            background-color: #0d1023;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        tr {
+            background-color: #1c1f33;
+            border-bottom: 1px solid #333;
+        }
+
+        .accordion {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .accordion:hover {
+            background-color: #333;
+        }
+
+        .panel {
+            display: none;
+            background-color: #2a2f42;
+            overflow: hidden;
+        }
+
+        .status-select {
+            background-color: #ffaa00;
+            color: #000;
+            border-radius: 3px;
+            border: none;
+            text-align: center;
+            padding: 5px;
+            width: 100%;
+        }
+
+        .status-select.stuck {
+            background-color: #ff0000;
+        }
+
+        .status-select.done {
+            background-color: #00ff00;
+        }
+
+        .status-select.wip {
+            background-color: #ffaa00;
+        }
+
+        #add-task-btn, #add-subitem-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #add-task-btn:hover, #add-subitem-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .selected {
+            background-color: #444;
+        }
+
+        .checkbox {
+            cursor: pointer;
+        }
+
+        td[contenteditable="true"] {
+            border: 1px solid #333;
+            padding: 8px;
+        }
+
+        td[contenteditable="true"]:focus {
+            outline: 2px solid #007bff;
+        }
+
+        .delete-icon {
+            cursor: pointer;
+            color: #ff3333;
+            font-size: 20px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>iOS API Tracking</h1>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Item</th>
+                    <th>Person</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Text</th>
+                    <th>Status1</th>
+                    <th>Text1</th>
+                    <th>Action</th> <!-- New column for delete button -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="accordion">
+                    <td><input type="checkbox" class="checkbox"></td>
+                    <td contenteditable="true">Sidebar</td>
+                    <td contenteditable="true"></td>
+                    <td>
+                        <select class="status-select wip">
+                            <option value="wip">WIP</option>
+                            <option value="stuck">STUCK</option>
+                            <option value="done">DONE</option>
+                        </select>
+                    </td>
+                    <td><input type="date" class="date-input"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                </tr>
+                <tr class="panel">
+                    <td colspan="9">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td contenteditable="true">Subtask 1</td>
+                                    <td contenteditable="true"></td>
+                                    <td>
+                                        <select class="status-select wip">
+                                            <option value="wip">WIP</option>
+                                            <option value="stuck">STUCK</option>
+                                            <option value="done">DONE</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="date" class="date-input"></td>
+                                    <td contenteditable="true"></td>
+                                    <td contenteditable="true"></td>
+                                    <td contenteditable="true"></td>
+                                    <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                                </tr>
+                                <!-- Additional subtask rows -->
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="add-task-btn">Add New Task</button>
+        <button id="add-subitem-btn">Add Subitem</button>
+    </div>
+    <script>
+        document.getElementById('add-task-btn').addEventListener('click', function() {
+            const tableBody = document.querySelector('table tbody');
+
+            const newAccordion = document.createElement('tr');
+            newAccordion.classList.add('accordion');
+            newAccordion.innerHTML = `
+                <td><input type="checkbox" class="checkbox"></td>
+                <td contenteditable="true">New Task</td>
+                <td contenteditable="true"></td>
+                <td>
+                    <select class="status-select wip">
+                        <option value="wip">WIP</option>
+                        <option value="stuck">STUCK</option>
+                        <option value="done">DONE</option>
+                    </select>
+                </td>
+                <td><input type="date" class="date-input"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+            `;
+
+            const newPanel = document.createElement('tr');
+            newPanel.classList.add('panel');
+            newPanel.innerHTML = `
+                <td colspan="9">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td contenteditable="true">Subtask 1</td>
+                                <td contenteditable="true"></td>
+                                <td>
+                                    <select class="status-select wip">
+                                        <option value="wip">WIP</option>
+                                        <option value="stuck">STUCK</option>
+                                        <option value="done">DONE</option>
+                                    </select>
+                                </td>
+                                <td><input type="date" class="date-input"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                            </tr>
+                            <!-- Additional subtask rows -->
+                        </tbody>
+                    </table>
+                </td>
+            `;
+
+            tableBody.appendChild(newAccordion);
+            tableBody.appendChild(newPanel);
+
+            addAccordionFunctionality(newAccordion, newPanel);
+            addStatusChangeEvent(newAccordion.querySelector('.status-select'));
+            newPanel.querySelectorAll('.status-select').forEach(select => addStatusChangeEvent(select));
+            addSelectTaskFunctionality(newAccordion.querySelector('.checkbox'), newAccordion);
+            addDatepickerFunctionality(newAccordion.querySelector('.date-input'));
+            addDeleteFunctionality([newAccordion.querySelector('.delete-icon')]);
+            newPanel.querySelectorAll('.delete-icon').forEach(icon => {
+                addDeleteFunctionality([icon]);
+            });
+        });
+
+        document.getElementById('add-subitem-btn').addEventListener('click', function() {
+            const selectedTasks = document.querySelectorAll('.selected');
+            selectedTasks.forEach(task => {
+                const panel = task.nextElementSibling;
+                if (panel && panel.classList.contains('panel')) {
+                    const subitemTableBody = panel.querySelector('tbody');
+                    const newSubitem = document.createElement('tr');
+                    newSubitem.innerHTML = `
+                        <td></td>
+                        <td contenteditable="true">New Subitem</td>
+                        <td contenteditable="true"></td>
+                        <td>
+                            <select class="status-select wip">
+                                <option value="wip">WIP</option>
+                                <option value="stuck">STUCK</option>
+                                <option value="done">DONE</option>
+                            </select>
+                        </td>
+                        <td><input type="date" class="date-input"></td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                        <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                    `;
+                    subitemTableBody.appendChild(newSubitem);
+                    addStatusChangeEvent(newSubitem.querySelector('.status-select'));
+                    addDatepickerFunctionality(newSubitem.querySelector('.date-input'));
+                    addDeleteFunctionality([newSubitem.querySelector('.delete-icon')]);
+                }
+            });
+        });
+
+        function addAccordionFunctionality(accordion, panel) {
+            accordion.addEventListener('click', function() {
+                panel.style.display = panel.style.display === 'table-row' ? 'none' : 'table-row';
+            });
+        }
+
+        function addStatusChangeEvent(select) {
+            select.addEventListener('change', function() {
+                select.className = 'status-select ' + select.value;
+            });
+        }
+
+        function addSelectTaskFunctionality(checkbox, row) {
+            checkbox.addEventListener('change', function() {
+                if (checkbox.checked) {
+                    row.classList.add('selected');
+                } else {
+                    row.classList.remove('selected');
+                }
+            });
+        }
+
+        function addDatepickerFunctionality(input) {
+            // Add any datepicker functionality if needed
+        }
+
+        function addDeleteFunctionality(deleteIcons) {
+            deleteIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const row = icon.closest('tr');
+                    const panel = row.nextElementSibling;
+                    if (panel && panel.classList.contains('panel')) {
+                        panel.remove();
+                    }
+                    row.remove();
+                });
+            });
+        }
+
+        // Call addDeleteFunctionality for existing delete icons
+        addDeleteFunctionality(document.querySelectorAll('.delete-icon'));
+
+        document.querySelectorAll('.accordion').forEach((accordion, index) => {
+            const panel = document.querySelectorAll('.panel')[index];
+            addAccordionFunctionality(accordion, panel);
+        });
+
+        document.querySelectorAll('.status-select').forEach(select => {
+            addStatusChangeEvent(select);
+        });
+
+        document.querySelectorAll('.checkbox').forEach((checkbox, index) => {
+            const row = document.querySelectorAll('.accordion')[index];
+            addSelectTaskFunctionality(checkbox, row);
+        });
+
+        document.querySelectorAll('.date-input').forEach(input => {
+            addDatepickerFunctionality(input);
+        });
+
+        // Function to add delete icon for new tasks
+        document.getElementById('add-task-btn').addEventListener('click', function() {
+            const newAccordion = document.querySelector('.accordion:last-of-type');
+            addDeleteIcon(newAccordion);
+        });
+
+        // Function to add delete icon for new subitems
+        document.getElementById('add-subitem-btn').addEventListener('click', function() {
+            const newSubitemAccordion = document.querySelector('.panel:last-of-type .accordion');
+            addDeleteIcon(newSubitemAccordion);
+        });
+    </script>
+</body>
+</html>
