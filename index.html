@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
             background-color: #0d1023;
@@ -119,6 +120,14 @@
             font-size: 20px;
             margin-right: 5px;
         }
+
+        .date-input {
+            width: 100%;
+            background-color: #1c1f33;
+            color: #fff;
+            border: 1px solid #333;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
@@ -137,7 +146,7 @@
                     <th>Text</th>
                     <th>Status1</th>
                     <th>Text1</th>
-                    <th>Action</th> <!-- New column for delete button -->
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -152,11 +161,11 @@
                             <option value="done">DONE</option>
                         </select>
                     </td>
-                    <td><input type="date" class="date-input"></td>
+                    <td><input type="text" class="date-input"></td>
                     <td contenteditable="true"></td>
                     <td contenteditable="true"></td>
                     <td contenteditable="true"></td>
-                    <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                    <td><i class="delete-icon">X</i></td>
                 </tr>
                 <tr class="panel">
                     <td colspan="9">
@@ -173,13 +182,12 @@
                                             <option value="done">DONE</option>
                                         </select>
                                     </td>
-                                    <td><input type="date" class="date-input"></td>
+                                    <td><input type="text" class="date-input"></td>
                                     <td contenteditable="true"></td>
                                     <td contenteditable="true"></td>
                                     <td contenteditable="true"></td>
-                                    <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                                    <td><i class="delete-icon">X</i></td>
                                 </tr>
-                                <!-- Additional subtask rows -->
                             </tbody>
                         </table>
                     </td>
@@ -189,6 +197,7 @@
         <button id="add-task-btn">Add New Task</button>
         <button id="add-subitem-btn">Add Subitem</button>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.getElementById('add-task-btn').addEventListener('click', function() {
             const tableBody = document.querySelector('table tbody');
@@ -206,11 +215,11 @@
                         <option value="done">DONE</option>
                     </select>
                 </td>
-                <td><input type="date" class="date-input"></td>
+                <td><input type="text" class="date-input"></td>
                 <td contenteditable="true"></td>
                 <td contenteditable="true"></td>
                 <td contenteditable="true"></td>
-                <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                <td><i class="delete-icon">X</i></td>
             `;
 
             const newPanel = document.createElement('tr');
@@ -230,13 +239,12 @@
                                         <option value="done">DONE</option>
                                     </select>
                                 </td>
-                                <td><input type="date" class="date-input"></td>
+                                <td><input type="text" class="date-input"></td>
                                 <td contenteditable="true"></td>
                                 <td contenteditable="true"></td>
                                 <td contenteditable="true"></td>
-                                <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                                <td><i class="delete-icon">X</i></td>
                             </tr>
-                            <!-- Additional subtask rows -->
                         </tbody>
                     </table>
                 </td>
@@ -274,11 +282,11 @@
                                 <option value="done">DONE</option>
                             </select>
                         </td>
-                        <td><input type="date" class="date-input"></td>
+                        <td><input type="text" class="date-input"></td>
                         <td contenteditable="true"></td>
                         <td contenteditable="true"></td>
                         <td contenteditable="true"></td>
-                        <td><i class="delete-icon">X</i></td> <!-- Delete icon -->
+                        <td><i class="delete-icon">X</i></td>
                     `;
                     subitemTableBody.appendChild(newSubitem);
                     addStatusChangeEvent(newSubitem.querySelector('.status-select'));
@@ -311,7 +319,13 @@
         }
 
         function addDatepickerFunctionality(input) {
-            // Add any datepicker functionality if needed
+            flatpickr(input, {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    input.value = dateStr;
+                }
+            });
         }
 
         function addDeleteFunctionality(deleteIcons) {
@@ -327,7 +341,6 @@
             });
         }
 
-        // Call addDeleteFunctionality for existing delete icons
         addDeleteFunctionality(document.querySelectorAll('.delete-icon'));
 
         document.querySelectorAll('.accordion').forEach((accordion, index) => {
@@ -346,18 +359,6 @@
 
         document.querySelectorAll('.date-input').forEach(input => {
             addDatepickerFunctionality(input);
-        });
-
-        // Function to add delete icon for new tasks
-        document.getElementById('add-task-btn').addEventListener('click', function() {
-            const newAccordion = document.querySelector('.accordion:last-of-type');
-            addDeleteIcon(newAccordion);
-        });
-
-        // Function to add delete icon for new subitems
-        document.getElementById('add-subitem-btn').addEventListener('click', function() {
-            const newSubitemAccordion = document.querySelector('.panel:last-of-type .accordion');
-            addDeleteIcon(newSubitemAccordion);
         });
     </script>
 </body>
